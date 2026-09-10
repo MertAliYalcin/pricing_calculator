@@ -261,7 +261,7 @@ async function wipe() {
   await db.setting.deleteMany({});
 }
 
-async function main() {
+export async function main() {
   await wipe();
 
   for (const p of PARAMETERS) {
