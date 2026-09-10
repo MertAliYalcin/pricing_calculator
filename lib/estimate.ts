@@ -1,13 +1,28 @@
+import { Prisma } from "@prisma/client";
 import { db } from "@/lib/db";
 import { evaluateFormula, type EvalResult, type ItemInputDef, type ParameterDef, type Trace } from "@/lib/formula";
 import { getResolvedParameters } from "@/lib/parameters";
 import { roundForPersistence } from "@/lib/money";
 
-/** Exactly one draft estimate exists at a time (SPEC.md §3.5); it is the cart. */
+/**
+ * Exactly one draft estimate exists at a time (SPEC.md §3.5); it is the cart.
+ *
+ * find-then-create isn't atomic, so two concurrent first-loads can both find nothing and both
+ * try to create it — the loser hits the partial unique index (`estimates_single_draft`) instead
+ * of a crash, so it re-fetches the row the winner created.
+ */
 export async function getOrCreateDraft() {
   const existing = await db.estimate.findFirst({ where: { status: "draft" } });
   if (existing) return existing;
-  return db.estimate.create({ data: { name: "Draft estimate", status: "draft" } });
+  try {
+    return await db.estimate.create({ data: { name: "Draft estimate", status: "draft" } });
+  } catch (error) {
+    if (error instanceof Prisma.PrismaClientKnownRequestError && error.code === "P2002") {
+      const winner = await db.estimate.findFirst({ where: { status: "draft" } });
+      if (winner) return winner;
+    }
+    throw error;
+  }
 }
 
 async function getAllParameters(): Promise<ParameterDef[]> {
