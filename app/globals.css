@@ -1,0 +1,220 @@
+@import "tailwindcss";
+@import "tw-animate-css";
+@import "shadcn/tailwind.css";
+
+@custom-variant dark (&:is(.dark *));
+
+/*
+  "Bill of quantities" — the app is a priced document, not a storefront.
+  Warm gray-green paper, ink-green stamp accent, hairline rules, tabular figures.
+*/
+
+@theme inline {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --font-sans: var(--font-instrument-sans), ui-sans-serif, system-ui, sans-serif;
+  --font-serif: var(--font-newsreader), ui-serif, Georgia, serif;
+  --font-mono: var(--font-plex-mono), ui-monospace, SFMono-Regular, monospace;
+  --font-heading: var(--font-newsreader), ui-serif, Georgia, serif;
+  --color-sidebar-ring: var(--sidebar-ring);
+  --color-sidebar-border: var(--sidebar-border);
+  --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
+  --color-sidebar-accent: var(--sidebar-accent);
+  --color-sidebar-primary-foreground: var(--sidebar-primary-foreground);
+  --color-sidebar-primary: var(--sidebar-primary);
+  --color-sidebar-foreground: var(--sidebar-foreground);
+  --color-sidebar: var(--sidebar);
+  --color-chart-5: var(--chart-5);
+  --color-chart-4: var(--chart-4);
+  --color-chart-3: var(--chart-3);
+  --color-chart-2: var(--chart-2);
+  --color-chart-1: var(--chart-1);
+  --color-ring: var(--ring);
+  --color-input: var(--input);
+  --color-border: var(--border);
+  --color-destructive: var(--destructive);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-accent: var(--accent);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-muted: var(--muted);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-secondary: var(--secondary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-primary: var(--primary);
+  --color-popover-foreground: var(--popover-foreground);
+  --color-popover: var(--popover);
+  --color-card-foreground: var(--card-foreground);
+  --color-card: var(--card);
+
+  /* Identity tokens, used directly where a semantic shadcn slot would obscure intent. */
+  --color-paper: var(--paper);
+  --color-leaf: var(--leaf);
+  --color-ink: var(--ink);
+  --color-graphite: var(--graphite);
+  --color-rule: var(--rule);
+  --color-stamp: var(--stamp);
+  --color-stamp-soft: var(--stamp-soft);
+  --color-flag: var(--flag);
+  --color-pencil: var(--pencil);
+
+  --radius-sm: calc(var(--radius) * 0.6);
+  --radius-md: calc(var(--radius) * 0.8);
+  --radius-lg: var(--radius);
+  --radius-xl: calc(var(--radius) * 1.4);
+  --radius-2xl: calc(var(--radius) * 1.8);
+  --radius-3xl: calc(var(--radius) * 2.2);
+  --radius-4xl: calc(var(--radius) * 2.6);
+}
+
+:root {
+  --paper: #f2f0e9;
+  --leaf: #fbfaf6;
+  --ink: #22251f;
+  --graphite: #6e7168;
+  --rule: #ddd9cd;
+  --stamp: #1f4d3d;
+  --stamp-soft: #e4eae3;
+  --flag: #9b3223;
+  --pencil: #8a6314;
+
+  --background: var(--paper);
+  --foreground: var(--ink);
+  --card: var(--leaf);
+  --card-foreground: var(--ink);
+  --popover: var(--leaf);
+  --popover-foreground: var(--ink);
+  --primary: var(--stamp);
+  --primary-foreground: #f7f6f1;
+  --secondary: #e8e5db;
+  --secondary-foreground: var(--ink);
+  --muted: #e8e5db;
+  --muted-foreground: var(--graphite);
+  --accent: var(--stamp-soft);
+  --accent-foreground: var(--stamp);
+  --destructive: var(--flag);
+  --border: var(--rule);
+  --input: var(--rule);
+  --ring: var(--stamp);
+  --chart-1: #1f4d3d;
+  --chart-2: #4a7a63;
+  --chart-3: #8a6314;
+  --chart-4: #6e7168;
+  --chart-5: #9b3223;
+  --radius: 0.25rem;
+  --sidebar: var(--paper);
+  --sidebar-foreground: var(--ink);
+  --sidebar-primary: var(--stamp);
+  --sidebar-primary-foreground: #f7f6f1;
+  --sidebar-accent: var(--stamp-soft);
+  --sidebar-accent-foreground: var(--stamp);
+  --sidebar-border: var(--rule);
+  --sidebar-ring: var(--stamp);
+}
+
+.dark {
+  --paper: #1b1e1a;
+  --leaf: #23261f;
+  --ink: #ece9df;
+  --graphite: #9a9c92;
+  --rule: #363a32;
+  --stamp: #86b79f;
+  --stamp-soft: #232e28;
+  --flag: #d38071;
+  --pencil: #c9a35a;
+
+  --background: var(--paper);
+  --foreground: var(--ink);
+  --card: var(--leaf);
+  --card-foreground: var(--ink);
+  --popover: var(--leaf);
+  --popover-foreground: var(--ink);
+  --primary: var(--stamp);
+  --primary-foreground: #17201b;
+  --secondary: #2c302a;
+  --secondary-foreground: var(--ink);
+  --muted: #2c302a;
+  --muted-foreground: var(--graphite);
+  --accent: var(--stamp-soft);
+  --accent-foreground: var(--stamp);
+  --destructive: var(--flag);
+  --border: var(--rule);
+  --input: var(--rule);
+  --ring: var(--stamp);
+  --sidebar: var(--paper);
+  --sidebar-foreground: var(--ink);
+  --sidebar-primary: var(--stamp);
+  --sidebar-primary-foreground: #17201b;
+  --sidebar-accent: var(--stamp-soft);
+  --sidebar-accent-foreground: var(--stamp);
+  --sidebar-border: var(--rule);
+  --sidebar-ring: var(--stamp);
+}
+
+@layer base {
+  * {
+    @apply border-border outline-ring/50;
+  }
+  body {
+    @apply bg-background text-foreground font-sans;
+    font-feature-settings: "ss01";
+  }
+  h1,
+  h2,
+  h3 {
+    @apply font-serif;
+    font-weight: 400;
+    letter-spacing: -0.011em;
+  }
+  /* Figures line up in a column or they are not a bill of quantities. */
+  input[type="number"] {
+    font-family: var(--font-mono), ui-monospace, monospace;
+    font-variant-numeric: tabular-nums slashed-zero;
+  }
+  input[type="number"]::-webkit-outer-spin-button,
+  input[type="number"]::-webkit-inner-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
+  }
+  input[type="number"] {
+    -moz-appearance: textfield;
+    appearance: textfield;
+  }
+}
+
+@layer components {
+  /* Column headers and field labels: the printed form's voice. */
+  .eyebrow {
+    font-family: var(--font-sans), ui-sans-serif, sans-serif;
+    font-size: 0.6875rem;
+    font-weight: 500;
+    letter-spacing: 0.13em;
+    text-transform: uppercase;
+    color: var(--graphite);
+    line-height: 1.4;
+  }
+  /* Marginal annotation: where a value came from, what changed. */
+  .annot {
+    font-family: var(--font-serif), ui-serif, Georgia, serif;
+    font-style: italic;
+    color: var(--graphite);
+  }
+  /* Any number a reader might add up. */
+  .figure {
+    font-family: var(--font-mono), ui-monospace, monospace;
+    font-variant-numeric: tabular-nums slashed-zero;
+  }
+  /* The accountant's total rule. */
+  .rule-double {
+    border-top: 3px double var(--rule);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}

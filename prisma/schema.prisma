@@ -1,0 +1,143 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider  = "postgresql"
+  url       = env("DATABASE_URL")
+  directUrl = env("DIRECT_URL")
+}
+
+enum EstimateStatus {
+  draft
+  saved
+
+  @@map("estimate_status")
+}
+
+model Parameter {
+  id           String    @id @default(uuid()) @db.Uuid
+  key          String    @unique
+  label        String
+  value        Decimal   @db.Decimal(18, 6)
+  formula      String?
+  /** Only meaningful when `formula` is null: renders an input for this parameter on every catalog item card whose formula references it. */
+  editable     Boolean   @default(false)
+  unit         String?
+  group        String?
+  description  String?
+  archivedAt   DateTime? @map("archived_at") @db.Timestamptz(6)
+  createdAt    DateTime  @default(now()) @map("created_at") @db.Timestamptz(6)
+  updatedAt    DateTime  @updatedAt @map("updated_at") @db.Timestamptz(6)
+
+  @@map("parameters")
+}
+
+model Category {
+  id        String   @id @default(uuid()) @db.Uuid
+  name      String
+  slug      String   @unique
+  icon      String?
+  sortOrder Int      @default(0) @map("sort_order")
+  createdAt DateTime @default(now()) @map("created_at") @db.Timestamptz(6)
+  updatedAt DateTime @updatedAt @map("updated_at") @db.Timestamptz(6)
+
+  items Item[]
+
+  @@map("categories")
+}
+
+model Item {
+  id          String    @id @default(uuid()) @db.Uuid
+  categoryId  String    @map("category_id") @db.Uuid
+  name        String
+  description String?
+  formula     String
+  /** A simple-icons slug (e.g. "postgresql"), shown as a logo on the catalog card. */
+  icon        String?
+  unitLabel   String?   @map("unit_label")
+  notes       String?
+  archivedAt  DateTime? @map("archived_at") @db.Timestamptz(6)
+  createdAt   DateTime  @default(now()) @map("created_at") @db.Timestamptz(6)
+  updatedAt   DateTime  @updatedAt @map("updated_at") @db.Timestamptz(6)
+
+  category  Category         @relation(fields: [categoryId], references: [id])
+  inputs    ItemInput[]
+  revisions FormulaRevision[]
+
+  @@map("items")
+}
+
+model ItemInput {
+  id           String  @id @default(uuid()) @db.Uuid
+  itemId       String  @map("item_id") @db.Uuid
+  key          String
+  label        String
+  defaultValue Decimal @map("default_value") @db.Decimal(18, 6)
+  unit         String?
+  sortOrder    Int     @default(0) @map("sort_order")
+
+  item Item @relation(fields: [itemId], references: [id], onDelete: Cascade)
+
+  @@unique([itemId, key])
+  @@map("item_inputs")
+}
+
+model Estimate {
+  id            String         @id @default(uuid()) @db.Uuid
+  name          String
+  client        String?
+  status        EstimateStatus @default(draft)
+  targetBudget  Decimal?       @map("target_budget") @db.Decimal(18, 6)
+  notes         String?
+  total         Decimal?       @db.Decimal(18, 6)
+  createdAt     DateTime       @default(now()) @map("created_at") @db.Timestamptz(6)
+  updatedAt     DateTime       @updatedAt @map("updated_at") @db.Timestamptz(6)
+  savedAt       DateTime?      @map("saved_at") @db.Timestamptz(6)
+
+  lines EstimateLine[]
+
+  @@map("estimates")
+}
+
+model EstimateLine {
+  id            String   @id @default(uuid()) @db.Uuid
+  estimateId    String   @map("estimate_id") @db.Uuid
+  itemId        String?  @map("item_id") @db.Uuid
+  itemName      String   @map("item_name")
+  categoryName  String   @map("category_name")
+  formula       String
+  quantity      Decimal  @default(1) @db.Decimal(18, 6)
+  inputValues   Json     @map("input_values")
+  resolvedScope Json     @map("resolved_scope")
+  lineTotal     Decimal? @map("line_total") @db.Decimal(18, 6)
+  error         String?
+  sortOrder     Int      @default(0) @map("sort_order")
+
+  estimate Estimate @relation(fields: [estimateId], references: [id], onDelete: Cascade)
+
+  @@map("estimate_lines")
+}
+
+model FormulaRevision {
+  id          String   @id @default(uuid()) @db.Uuid
+  itemId      String   @map("item_id") @db.Uuid
+  formula     String
+  replacedAt  DateTime @default(now()) @map("replaced_at") @db.Timestamptz(6)
+
+  item Item @relation(fields: [itemId], references: [id], onDelete: Cascade)
+
+  @@map("formula_revisions")
+}
+
+/// App-level singleton settings: a label or a choice that is not a number, and so cannot live on
+/// a Parameter (whose `value` is numeric). Currently only which LLM models are selected for N1/N2
+/// — the prices themselves are parameters, and the parameters are the truth.
+/// Anything needing more than one row per concept gets its own table rather than landing here.
+model Setting {
+  key       String   @id
+  value     String
+  updatedAt DateTime @updatedAt @map("updated_at") @db.Timestamptz(6)
+
+  @@map("settings")
+}
